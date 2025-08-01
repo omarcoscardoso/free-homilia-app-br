@@ -25,8 +25,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     nodejs \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
+    npm 
 
 # Instale as extensões PHP comuns
 RUN docker-php-ext-install pdo pdo_mysql zip opcache mbstring exif pcntl bcmath gd sockets
