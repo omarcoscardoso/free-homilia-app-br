@@ -25,12 +25,12 @@ RUN apt-get update && apt-get install -y \
     git \
     nodejs \
     npm \
-    # libonig-dev \   
-    # libxml2-dev \  
-    # libfreetype6-dev \ 
-    # libjpeg62-turbo-dev \
-    # libpng-dev \   
-    # libwebp-dev \  
+    libonig-dev \   
+    libxml2-dev \  
+    libfreetype6-dev \ 
+    libjpeg62-turbo-dev \
+    libpng-dev \   
+    libwebp-dev \  
     && rm -rf /var/lib/apt/lists/*
 
 # Instale as extensões PHP comuns.
