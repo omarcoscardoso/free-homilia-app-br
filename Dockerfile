@@ -8,10 +8,22 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefe
 FROM php:8.2-fpm-alpine
 
 # Instala o Nginx
-RUN apk add --no-cache nginx
+RUN apk add --no-cache \
+        nginx \
+        libzip-dev \
+        libxml2-dev \
+        # Adicione outras dependências se precisar (ex: para gd, libpng-dev libjpeg-turbo-dev)
+    && docker-php-ext-install \
+        bcmath \
+        ctype \
+        fileinfo \
+        mbstring \
+        pdo \
+        tokenizer \
+        xml \
+        zip
 
 # Remove a configuração padrão do PHP-FPM e copia as nossas.
-RUN rm /usr/local/etc/php-fpm.d/www.conf.default
 COPY .docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
