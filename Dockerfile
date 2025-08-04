@@ -12,7 +12,7 @@ RUN apk add --no-cache \
         nginx \
         libzip-dev \
         libxml2-dev \
-        docker-php-ext-install \
+    && docker-php-ext-install \
         bcmath \
         ctype \
         fileinfo \
