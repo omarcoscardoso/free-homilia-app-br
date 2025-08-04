@@ -33,7 +33,8 @@ WORKDIR /var/www/html
 COPY --from=builder /app .
 
 # Ajusta permissões
-RUN chown -R www-data:www-data /var/www/html /var/run && \
+RUN mkdir -p /var/run/php && \
+    chown -R www-data:www-data /var/www/html /var/run/php && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Otimiza o Laravel para produção
