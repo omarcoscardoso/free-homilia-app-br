@@ -19,20 +19,11 @@ COPY .docker/nginx.conf /etc/nginx/nginx.conf
 # Define o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia o código da aplicação e as dependências do estágio 'builder'
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/vendor ./vendor
-COPY --from=builder /app/resources ./resources
-COPY --from=builder /app/routes ./routes
-COPY --from=builder /app/storage ./storage
-COPY --from=builder /app/bootstrap ./bootstrap
-COPY --from=builder /app/config ./config
-COPY --from=builder /app/artisan .
-COPY --from=builder /app/.env.example ./.env
+COPY --from=builder /app .
 
 # Ajusta permissões
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 775 /var/www/html/storage
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Otimiza o Laravel para produção
 RUN php artisan config:cache && \
