@@ -1,56 +1,96 @@
-# Estágio 1: Builder
-FROM composer:2.5 as builder
-WORKDIR /app
-COPY . .
-RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefer-dist --optimize-autoloader
 
-# Estágio 2: App - A imagem final de produção
-FROM php:8.2-fpm-alpine
+# Use the official PHP image.
+# https://hub.docker.com/_/php
+FROM php:8.4-apache
 
-# Instala o Nginx e as dependências
-RUN apk add --no-cache \
-        nginx \
-        libzip-dev \
-        libxml2-dev \
-        zlib-dev \
-        oniguruma-dev \
-    && docker-php-ext-install \
-        bcmath \
-        ctype \
-        fileinfo \
-        mbstring \
-        xml \
-        zip
+# Configure PHP for Cloud Run.
+# Precompile PHP code with opcache.
+RUN docker-php-ext-install -j "$(nproc)" opcache
+RUN set -ex; \
+  { \
+    echo "; Cloud Run enforces memory & timeouts"; \
+    echo "memory_limit = -1"; \
+    echo "max_execution_time = 0"; \
+    echo "; File upload at Cloud Run network limit"; \
+    echo "upload_max_filesize = 32M"; \
+    echo "post_max_size = 32M"; \
+    echo "; Configure Opcache for Containers"; \
+    echo "opcache.enable = On"; \
+    echo "opcache.validate_timestamps = Off"; \
+    echo "; Configure Opcache Memory (Application-specific)"; \
+    echo "opcache.memory_consumption = 32"; \
+  } > "$PHP_INI_DIR/conf.d/cloud-run.ini"
 
-# Remove a configuração padrão do PHP-FPM e copia as nossas.
-COPY .docker/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY .docker/nginx.conf /etc/nginx/nginx.conf
-
-# Define o diretório de trabalho
+# Copy in custom code from the host machine.
 WORKDIR /var/www/html
+COPY . ./
 
-# Copia toda a aplicação do estágio 'builder'
-COPY --from=builder /app .
+# Ensure the webserver has permissions to execute index.php
+RUN chown -R www-data:www-data /var/www/html
 
-# Ajusta permissões
-RUN mkdir -p /var/www/html/run && \
-    chown -R www-data:www-data /var/www/html && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/run
+# Use the PORT environment variable in Apache configuration files.
+# https://cloud.google.com/run/docs/reference/container-contract#port
+RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-# Otimiza o Laravel para produção
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Configure PHP for development.
+# Switch to the production php.ini for production operations.
+# RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# https://github.com/docker-library/docs/blob/master/php/README.md#configuration
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-# Expõe a porta que o Cloud Run espera
-EXPOSE 8080
+# # Estágio 1: Builder
+# FROM composer:2.5 as builder
+# WORKDIR /app
+# COPY . .
+# RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefer-dist --optimize-autoloader
 
-# Script de inicialização
-COPY .docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+# # Estágio 2: App - A imagem final de produção
+# FROM php:8.2-fpm-alpine
 
-# Comando para iniciar os serviços
-CMD ["/usr/local/bin/start.sh"]
+# # Instala o Nginx e as dependências
+# RUN apk add --no-cache \
+#         nginx \
+#         libzip-dev \
+#         libxml2-dev \
+#         zlib-dev \
+#         oniguruma-dev \
+#     && docker-php-ext-install \
+#         bcmath \
+#         ctype \
+#         fileinfo \
+#         mbstring \
+#         xml \
+#         zip
+
+# # Remove a configuração padrão do PHP-FPM e copia as nossas.
+# COPY .docker/www.conf /usr/local/etc/php-fpm.d/www.conf
+# COPY .docker/nginx.conf /etc/nginx/nginx.conf
+
+# # Define o diretório de trabalho
+# WORKDIR /var/www/html
+
+# # Copia toda a aplicação do estágio 'builder'
+# COPY --from=builder /app .
+
+# # Ajusta permissões
+# RUN mkdir -p /var/www/html/run && \
+#     chown -R www-data:www-data /var/www/html && \
+#     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/run
+
+# # Otimiza o Laravel para produção
+# RUN php artisan config:cache && \
+#     php artisan route:cache && \
+#     php artisan view:cache
+
+# # Expõe a porta que o Cloud Run espera
+# EXPOSE 8080
+
+# # Script de inicialização
+# COPY .docker/start.sh /usr/local/bin/start.sh
+# RUN chmod +x /usr/local/bin/start.sh
+
+# # Comando para iniciar os serviços
+# CMD ["/usr/local/bin/start.sh"]
 
 
 ##########################################################################
