@@ -8,6 +8,22 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{{ asset('service-worker.js') }}')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Falha ao registrar Service Worker: ', error);
+                    });
+            });
+        }
+    </script>
   </head>
    <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
         @yield('content')
