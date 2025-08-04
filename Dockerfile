@@ -7,11 +7,12 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --prefe
 # Estágio 2: App - A imagem final de produção
 FROM php:8.2-fpm-alpine
 
-# Instala o Nginx
+# Instala o Nginx e as dependências
 RUN apk add --no-cache \
         nginx \
         libzip-dev \
         libxml2-dev \
+        zlib-dev \
     && docker-php-ext-install \
         bcmath \
         ctype \
