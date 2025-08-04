@@ -12,8 +12,7 @@ RUN apk add --no-cache \
         nginx \
         libzip-dev \
         libxml2-dev \
-        # Adicione outras dependências se precisar (ex: para gd, libpng-dev libjpeg-turbo-dev)
-    && docker-php-ext-install \
+        docker-php-ext-install \
         bcmath \
         ctype \
         fileinfo \
