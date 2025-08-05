@@ -70,12 +70,6 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
     ```
     *(A primeira vez que você executar este comando, o Docker pode demorar um pouco para baixar as imagens necessárias.)*
 
-6.  **Execute as migrações do banco de dados:**
-
-    ```bash
-    ./vendor/bin/sail artisan migrate
-    ```
-
 ---
 
 ### 🔨 Configurando a API do Gemini
