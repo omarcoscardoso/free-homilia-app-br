@@ -29,4 +29,4 @@ jobs:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ env.REGION }}
           source: . 
-          flags: '--allow-unauthenticated'
+          flags: '--allow-unauthenticated' 
