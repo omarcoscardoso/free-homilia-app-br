@@ -10,7 +10,8 @@ class GenerateHomilia extends Component
     public string $text_homilia = '';
     public ?string $verso_homilia = null;
     public ?int $qt_divisao_homilia = null;
-
+    public $showFeedbackModal = false;
+    
     // Propriedade para armazenar o resultado da IA
     public ?string $message = null;
     public ?string $error = null; // Para exibir mensagens de erro

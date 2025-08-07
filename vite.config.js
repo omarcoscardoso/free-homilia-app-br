@@ -29,8 +29,9 @@ export default defineConfig({
                 navigateFallback: '/',
                 globPatterns: [
                     '**/*.{js,css,html,ico,png,svg}',
+                    '../images/icons/*.png',
                 ],
-                // Essa é a nova parte que irá resolver o seu problema:
+                // regra de cache de tempo de execução
                 runtimeCaching: [
                     {
                         urlPattern: ({ url }) => url.pathname === '/',
