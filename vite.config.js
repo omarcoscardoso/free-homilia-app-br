@@ -48,7 +48,7 @@ export default defineConfig({
                 id: "homilia-app",
                 description: 'Um aplicativo que te ajuda a gerar esboço de sermão.',
                 lang: 'pt-BR',
-                start_url: '.',
+                start_url: '/',
                 scope: '/',
                 display: 'standalone',
                 background_color: '#ffffff',
