@@ -7,15 +7,15 @@
         <div class="flex-none w-full md:w-1/3 bg-white dark:bg-gray-800 shadow-lg md:shadow-none p-4 transition-colors duration-300 md:sticky md:top-0">
             <div class="w-full max-w-sm flex flex-col items-center space-y-0 mx-auto">
                 {{-- Logo --}}
-                <div class="mb-8">
-                    <a href="{{ route('gemini-homilia.create') }}">
-                        <img class="w-auto h-auto max-h-[89px]" src="https://storage.googleapis.com/homilia/logo_homilia.webp" alt="HomiliA Logo">
+                <div class="mb-8 text-center">
+                    <a href="{{ route('gemini-homilia.create') }}" class="block mx-auto w-fit">
+                        <img class="w-auto h-auto max-h-[89px] mx-auto block" src="https://storage.googleapis.com/homilia/logo_homilia.webp" alt="HomiliA Logo">
                     </a>
                     <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Seu Gerador de Esboços com IA.
+                        Seu auxiliar na construção de Esboços e Estudos com IA.
                     </p>
                 </div>
-    
+
                 {{-- Formulário --}}
                 <form wire:submit.prevent="generateHomilia" class="w-full flex flex-col items-center space-y-4">
                     @csrf
@@ -103,20 +103,12 @@
             @endif
         </div>
 
-        {{-- Botão de Feedback no canto inferior direito --}}
-        <div class="fixed bottom-4 right-4 z-50">
-            <button wire:click="$set('showFeedbackModal', true)" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 ease-in-out" aria-label="Dar feedback">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-            </button>
-        </div>
-
         {{-- Modal para o Formulário de Feedback --}}
-        <div x-data="{ show: @entangle('showFeedbackModal') }"
-             x-show="show"
+        <div x-data="{ showFeedbackModal: false }"
+             @open-feedback-modal.window="showFeedbackModal = true"
+             x-show="showFeedbackModal"
              x-cloak
-             @click.away="$wire.set('showFeedbackModal', false)"
+             @keydown.escape.window="showFeedbackModal = false"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -126,11 +118,11 @@
              class="fixed inset-0 z-[60] overflow-y-auto p-4 flex items-center justify-center">
 
             {{-- Overlay com z-index menor --}}
-            <div x-show="show" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-10"></div>
+            <div x-show="showFeedbackModal" @click="showFeedbackModal = false" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-10"></div>
             
             {{-- Conteúdo do Modal --}}
             <div @click.stop
-                 x-show="show"
+                 x-show="showFeedbackModal"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -151,7 +143,7 @@
                     </div>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button wire:click="$set('showFeedbackModal', false)" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button @click="showFeedbackModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Fechar
                     </button>
                 </div>
@@ -207,6 +199,74 @@
         </div>
     </div>
 
+    {{-- Modal "Fale Conosco" --}}
+    <div x-data="{ showFaleModal: false }"
+         @open-fale-modal.window="showFaleModal = true"
+         x-show="showFaleModal"
+         x-cloak
+         @keydown.escape.window="showFaleModal = false"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[60] overflow-y-auto p-4 flex items-center justify-center">
+
+        {{-- Overlay --}}
+        <div x-show="showFaleModal" @click="showFaleModal = false" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-10"></div>
+
+        {{-- Conteúdo do Modal --}}
+        <div @click.stop
+             x-show="showFaleModal"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full z-20 relative">
+            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="about-modal-title">
+                            Fale Conosco
+                        </h3>
+                        <div class="mt-4 text-sm text-gray-600 dark:text-gray-300 space-y-4">
+                            <p>
+                                Olá! Sua opinião é muito importante para nós. Se você tem dúvidas, sugestões, críticas ou deseja relatar um problema de forma mais detalhada, por favor, entre em contato!
+                            </p>
+
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Canais de Contato:</h4>
+                                <ul class="list-disc list-inside space-y-1 ml-4">
+                                    <li>
+                                        <strong>E-mail:</strong> <a href="mailto:cardoso.oliveira@gmail.com" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition duration-150 ease-in-out">cardoso.oliveira@gmail.com</a>
+                                    </li>
+                                    {{-- Se você tiver um número de WhatsApp --}}
+                                    <li>
+                                        <strong>WhatsApp:</strong> <a href="https://wa.me/5551992832133" target="_blank" class="text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition duration-150 ease-in-out">Mande uma mensagem!</a>
+                                    </li>
+                                    {{-- Adicione um link para suas redes sociais se for relevante --}}
+                                    <li>
+                                        <strong>Redes Sociais:</strong> <a href="https://www.instagram.com/iprviamao" target="_blank" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition duration-150 ease-in-out">Instagram</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button @click="showFaleModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-white shadow-sm dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-2 mt-auto transition-colors duration-300">
         <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
             <p class="text-sm text-gray-500 md:text-center dark:text-gray-400">
@@ -217,7 +277,10 @@
                     <button @click="$dispatch('open-about-modal')" class="hover:underline me-4 md:me-6">Sobre</button>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline me-4 md:me-6">Fale Conosco</a>
+                    <button @click="$dispatch('open-fale-modal')" class="hover:underline me-4 md:me-6">Fale Conosco</button>
+                </li>
+                <li>
+                    <button @click="$dispatch('open-feedback-modal')" class="hover:underline">Relatar um problema</button>
                 </li>
             </ul>
         </div>

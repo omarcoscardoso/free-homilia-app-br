@@ -7,7 +7,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     
     <link rel="manifest" href="/build/manifest.webmanifest" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJqLz0E5kE5z3F7Jq9R8FpQv5aT4t2p7P7n9G00I2/Q61tQ8H03jE1G1s1Ww==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     @livewireStyles
