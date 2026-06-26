@@ -12,7 +12,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Contracts\SermonGeneratorInterface::class,
+            \App\Services\GeminiService::class
+        );
+
+        $this->app->bind(
+            \App\Contracts\PdfExportServiceInterface::class,
+            \App\Services\DomPdfExportService::class
+        );
     }
 
     /**
@@ -20,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // if ($this->app->environment('production')) {
-        //     URL::forceScheme('https');
-        // }
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

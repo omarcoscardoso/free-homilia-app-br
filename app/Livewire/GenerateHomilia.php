@@ -3,7 +3,8 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Services\GeminiService;
+use App\Contracts\SermonGeneratorInterface;
+
 class GenerateHomilia extends Component
 {
     // Propriedades do Livewire que serão vinculadas aos inputs do formulário
@@ -16,29 +17,31 @@ class GenerateHomilia extends Component
     public ?string $message = null;
     public ?string $error = null; // Para exibir mensagens de erro
 
-    protected $geminiService;
+    protected SermonGeneratorInterface $sermonGenerator;
 
-    // Injeção de dependência via construtor
-    public function boot(GeminiService $geminiService)
+    /**
+     * Injeção de dependência via método boot do Livewire (SOLID DIP).
+     */
+    public function boot(SermonGeneratorInterface $sermonGenerator)
     {
-        $this->geminiService = $geminiService;
+        $this->sermonGenerator = $sermonGenerator;
     }
 
-    // Método que será chamado quando o formulário for submetido
+    /**
+     * Método chamado quando o formulário for submetido.
+     */
     public function generateHomilia()
     {
-        // Valida os dados usando as mesmas regras do seu Form Request
-        // Livewire tem seu próprio sistema de validação, similar ao Laravel.
+        // Valida os dados usando as regras necessárias
         $this->validate([
             'text_homilia' => 'required|string|min:10|max:5000',
             'verso_homilia' => 'nullable|string|min:5|max:255',
             'qt_divisao_homilia' => 'nullable|integer|min:1|max:10',
         ],
-        // Mensagens de erro personalizadas para o Livewire
         [
             'text_homilia.required' => 'Por favor, insira um texto para o esboço.',
             'text_homilia.string' => 'O texto do sermão deve ser uma string válida.',
-            'text_homilia.min' => 'O texto do sermão deve ter no mínimo :min caracteres :min caracteres.',
+            'text_homilia.min' => 'O texto do sermão deve ter no mínimo :min caracteres.',
             'text_homilia.max' => 'O texto do sermão não pode exceder :max caracteres.',
             'verso_homilia.string' => 'O versículo deve ser uma string válida.',
             'verso_homilia.min' => 'O versículo deve ter no mínimo :min caracteres.',
@@ -48,13 +51,13 @@ class GenerateHomilia extends Component
             'qt_divisao_homilia.max' => 'A quantidade de divisões não pode exceder :max.',
         ]);
 
-        // Reseta a mensagem de erro anterior, se houver
+        // Reseta as mensagens anteriores
         $this->error = null;
-        $this->message = null; // Limpa a mensagem anterior antes de gerar uma nova
+        $this->message = null;
 
         try {
-            // Chama o serviço para processar a homilia
-            $this->message = $this->geminiService->analyzeHomilia(
+            // Chama a abstração do gerador de sermão
+            $this->message = $this->sermonGenerator->generate(
                 $this->text_homilia,
                 $this->verso_homilia,
                 $this->qt_divisao_homilia
@@ -65,7 +68,9 @@ class GenerateHomilia extends Component
         }
     }
 
-    // O método render() é responsável por renderizar o template Blade do componente
+    /**
+     * Renderiza o template Blade do componente.
+     */
     public function render()
     {
         return view('livewire.generate-homilia');

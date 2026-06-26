@@ -7,12 +7,39 @@ on:
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  SERVICE_NAME: 'homilia-app' 
+  SERVICE_NAME: 'homilia-app-free' 
   REGION: 'us-central1'
 
 jobs:
+  test-homilia:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, zip
+          coverage: none
+
+      - name: Install Composer Dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Generate App Key
+        run: php artisan key:generate
+
+      - name: Run Tests
+        run: php artisan test
+
   build-and-deploy:
     name: Build and Deploy
+    needs: test-homilia
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
