@@ -13,13 +13,12 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'homilia-app-free'
+      - 'free-homilia-app-br'
       - '--image'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/homilia-app-repo/free-homilia-app-br:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--allow-unauthenticated'
 
-# Resolve o erro de permissão de logs ao usar Conta de Serviço customizada
 options:
   logging: CLOUD_LOGGING_ONLY
