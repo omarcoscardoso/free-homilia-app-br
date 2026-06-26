@@ -1,0 +1,25 @@
+steps:
+  # 1. Constrói a imagem Docker a partir do Dockerfile
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/homilia-app:$COMMIT_SHA', '.']
+
+  # 2. Envia a imagem para o Container/Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/homilia-app:$COMMIT_SHA']
+
+  # 3. Faz o deploy da imagem no Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'homilia-app-free'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/homilia-app:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+
+# Resolve o erro de permissão de logs ao usar Conta de Serviço customizada
+options:
+  logging: CLOUD_LOGGING_ONLY
