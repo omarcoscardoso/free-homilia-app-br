@@ -1,10 +1,12 @@
 steps:
   # 1. Constrói a imagem Docker aplicando a tag do Commit e a tag 'latest'
   - name: 'gcr.io/cloud-builders/docker'
-    args: 
+    args:
       - 'build'
-      - '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/homilia-app-repo/free-homilia-app-br:$COMMIT_SHA'
-      - '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/homilia-app-repo/free-homilia-app-br:latest'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/homilia-app-repo/free-homilia-app-br:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/homilia-app-repo/free-homilia-app-br:latest'
       - '.'
 
   # 2. Envia as imagens para o Artifact Registry
